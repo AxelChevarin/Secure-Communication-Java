@@ -9,9 +9,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 
 public class TransferServer {
-
-
-
     public static void main(String[] args) throws NoSuchAlgorithmException {
         ServerSocket socket;
         Socket transferSocket;
@@ -80,23 +77,15 @@ class Accepter_clients implements Runnable {
                     out2.flush();
                     out2.println("Debut de l'envoie vers Ottawa ....");
                     out2.flush();
-
-
                     HashMessage = SHA512Hashing(reponse);
                     Packet p = new Packet(encryptedAesShaKey,encryptedAesKey,iv,encryptedAESMessage, HashMessage);
                     transferCanal.writeObject(p);
                     transferCanal.flush();
-
                     out2.println("Message sécurisé envoyé avec succès");
-
-
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
-
-
             }
             socket.close();
 
@@ -107,80 +96,52 @@ class Accepter_clients implements Runnable {
         }
     }
     private KeyPair GenerateRSAKey () throws NoSuchAlgorithmException {
-
-
         final int keysize = 1024;
-
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-
         keyPairGenerator.initialize(keysize);
         return keyPairGenerator.genKeyPair();
     }
 
     private SecretKey GenerateAESKey() throws NoSuchAlgorithmException {
-
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
         SecretKey s = keyGen.generateKey();
-
         return s;
-
     }
 
     private byte[] encryptionRSAPrivate (KeyPair keys, String message) throws Exception {
-
         Cipher ciphermode = Cipher.getInstance("RSA");
         ciphermode.init(Cipher.ENCRYPT_MODE, keys.getPrivate());
-
-
-
         return ciphermode.doFinal(message.getBytes());
-
-
     }
 
     private byte[] encryptionRSAPublic (String decryptedKey) throws Exception {
-
         Cipher ciphermode = Cipher.getInstance("RSA");
-
         ciphermode.init(Cipher.ENCRYPT_MODE, RSAOttawaKeyPair.getPublic());
-
-
         return ciphermode.doFinal(decryptedKey.getBytes());
-
-
     }
 
     private String SHA512Hashing (String key){
-
         try {
             MessageDigest md =  MessageDigest.getInstance("SHA-512");
             byte[] byteSHA = md.digest(key.getBytes());
             String SHA = Base64.getEncoder().encodeToString(byteSHA);
             return SHA;
-
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
-
-
     }
 
     private byte[] encryptionAES256 (String message, SecretKey key, byte[] iv){
-
         int iteration = 10000;
         int keySize = 256;
         byte [] encryptedMessage = null;
-
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             IvParameterSpec ivParams = new IvParameterSpec(iv);
             cipher.init(Cipher.ENCRYPT_MODE, key, ivParams);
             encryptedMessage = cipher.doFinal(message.getBytes());
-
-
-
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -194,8 +155,6 @@ class Accepter_clients implements Runnable {
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         }
-
-
         return encryptedMessage;
     }
 
@@ -209,12 +168,8 @@ class Accepter_clients implements Runnable {
         }
         iv = new byte[128/8];
         secRandom.nextBytes(iv);
-
         return  iv;
-
     }
-
-
 }
 
 
